@@ -20,24 +20,24 @@ function viewDepartments() {
   // Query database
   db.query("SELECT * FROM department", function (err, results) {
     console.table(results);
+    anythingElse();
   });
-  anythingElse();
 }
 
 function viewRoles() {
   // Query database
-  db.query("SELECT role.id, role.title, role.salary, department.name FROM role JOIN department ON role.department_id = department.id", function (err, results) {
+  db.query("SELECT role.id, role.title, role.salary, department.dept_name FROM role JOIN department ON role.department_id = department.id", function (err, results) {
     console.table(results);
+    anythingElse();
   });
-  anythingElse();
 }
 
 function viewEmployees() {
   // Query database
-  db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", function (err, results) {
+  db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.dept_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", function (err, results) {
     console.table(results);
+    anythingElse();
   });
-  anythingElse();
 }
 
 function addDepartment() {
@@ -45,7 +45,7 @@ function addDepartment() {
     .prompt([
       {
         message: "What is the department name?",
-        name: "name",
+        name: "dept_name",
       },
     ])
     .then((answer) => {
@@ -59,7 +59,7 @@ function addDepartment() {
 
 function addRole() {
   db.query("SELECT * FROM department", function (err, results) {
-    const departments = results.map((department) => ({ name: department.name, value: department.id }));
+    const departments = results.map((department) => ({ name: department.dept_name, value: department.id }));
     inquirer
       .prompt([
         {

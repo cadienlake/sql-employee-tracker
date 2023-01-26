@@ -1,7 +1,7 @@
 use tracker;
 
 INSERT INTO department
-    (name)
+    (dept_name)
 VALUES
     ('Sales'),
     ('Engineering'),

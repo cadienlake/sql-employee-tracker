@@ -132,27 +132,38 @@ function updateEmployee() {
     const employees = results.map((employee) => ({ name: employee.first_name + " " + employee.last_name, value: employee.id }));
     db.query("SELECT * FROM role", function (err, results) {
       const roles = results.map((role) => ({ name: role.title, value: role.id }));
-      inquirer
-        .prompt([
-          {
-            type: "list",
-            message: "Which employee would you like to update?",
-            name: "id",
-            choices: employees,
-          },
-          {
-            type: "list",
-            message: "What role would you like to assign this employee?",
-            name: "role_id",
-            choices: roles,
-          },
-        ])
-        .then((answer) => {
-          db.query("UPDATE employee SET role_id = ? WHERE id = ? ", [answer.role_id, answer.id], function (err, results) {
-            console.log("Employee updated successfully");
-            anythingElse();
+      db.query("SELECT * FROM employee WHERE manager_id IS NULL", function (err, results) {
+        const managers = results.map((manager) => ({ name: manager.first_name + " " + manager.last_name, value: manager.id }));
+        managers.unshift({ name: "None", value: null });
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              message: "Which employee would you like to update?",
+              name: "id",
+              choices: employees,
+            },
+            {
+              type: "list",
+              message: "What role would you like to assign this employee?",
+              name: "role_id",
+              choices: roles,
+            },
+            {
+              type: "list",
+              message: "Who is their manager?",
+              name: "manager_id",
+              choices: managers,
+            },
+          ])
+          .then((answer) => {
+            db.query("UPDATE employee SET role_id = ? WHERE id = ? ", [answer.role_id, answer.id], function (err, results) {});
+            db.query("UPDATE employee SET manager_id = ? WHERE id = ? ", [answer.manager_id, answer.id], function (err, results) {
+              console.log("Employee updated successfully");
+              anythingElse();
+            });
           });
-        });
+      });
     });
   });
 }
